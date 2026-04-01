@@ -1,0 +1,41 @@
+# Python core
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual Environment
+venv/
+.venv/
+env/
+ENV/
+
+# Environment Variables (CRITICAL)
+.env
+.env.*
+*.env
+
+# Project Outputs (audio files)
+outputs/
+*.wav
+*.mp3
+*.log
+
+# Build / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Optional future-proofing
+*.db

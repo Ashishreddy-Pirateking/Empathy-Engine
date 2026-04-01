@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+python-dotenv
+vaderSentiment
+pyttsx3
+transformers
+elevenlabs==0.2.27
+python-multipart
