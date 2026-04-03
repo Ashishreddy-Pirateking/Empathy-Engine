@@ -35,9 +35,8 @@ async def synthesize_speech(request: SynthesizeRequest):
     logger.info(f"Received synthesize request: {text[:50]}...")
     
     # 1. Detect Emotion
-    emotion_result = detect_emotion(text)
-    emotion = emotion_result['emotion']
-    intensity = emotion_result['intensity']
+    emotion, intensity = detect_emotion(text)
+    
     
     # 2. Map Voice Parameters (used for local)
     voice_params = get_voice_params(emotion, intensity)

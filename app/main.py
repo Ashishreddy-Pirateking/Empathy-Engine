@@ -1,3 +1,4 @@
+from app.text_enhancer import enhance_text
 import argparse
 import sys
 import uvicorn
@@ -5,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from dotenv import load_dotenv
+
 
 import app.emotion as emotion
 import app.voice_mapper as voice_mapper
@@ -39,6 +41,7 @@ def cli_mode(text: str):
     
     # 1. Detect emotion
     res = emotion.detect_emotion(text)
+    enhanced_text = enhance_text(text, res['emotion'], res['intensity'])
     print(f"-> Emotion: {res['emotion']} (Intensity: {res['intensity']:.2f})")
     
     # 2. Get params
@@ -53,16 +56,16 @@ def cli_mode(text: str):
     if mode == "cloud" and api_key_exists:
         try:
             from app.tts_engine import generate_cloud_audio
-            out_path = generate_cloud_audio(text, res['emotion'])
+            out_path = generate_cloud_audio(enhanced_text, res['emotion'])
             print(f"-> Mode: Cloud (ElevenLabs)")
         except Exception as e:
             print(f"-> Cloud failed: {e}. Falling back to local.")
             from app.tts_engine import generate_local_audio
-            out_path = generate_local_audio(text, params)
+            out_path = generate_local_audio(enhanced_text, params)
             print(f"-> Mode: Local Fallback (pyttsx3)")
     else:
         from app.tts_engine import generate_local_audio
-        out_path = generate_local_audio(text, params)
+        out_path = generate_local_audio(enhanced_text, params)
         print(f"-> Mode: Local (pyttsx3)")
         
     print(f"-> Output saved to: {out_path}\n")

@@ -1,38 +1,28 @@
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-from app.utils import setup_logger
 
-logger = setup_logger("emotion")
 analyzer = SentimentIntensityAnalyzer()
 
-def detect_emotion(text: str) -> dict:
-    """
-    Analyzes the sentiment of precisely given text.
-    Classifies into 3 categories: Happy, Neutral, Frustrated.
-    Also returns an intensity metric.
-    
-    Args:
-        text (str): The input text to analyze.
-        
-    Returns:
-        dict: A dictionary containing 'emotion' and 'intensity'.
-    """
-    scores = analyzer.polarity_scores(text)
-    compound = scores['compound']
-    
-    # Calculate intensity on a 0.0 to 1.0 scale (absolute value of compound score)
-    # Neutral text gets an intensity of 0.0
-    intensity = abs(compound)
-    
-    if compound >= 0.05:
-        emotion = "Happy"
-    elif compound <= -0.05:
-        emotion = "Frustrated"
+def detect_emotion(text):
+    text_lower = text.lower()
+    score = analyzer.polarity_scores(text)["compound"]
+
+    if any(word in text_lower for word in ["haha", "lol", "lmao"]):
+        return "joy", abs(score)
+
+    if "!" in text_lower or "excited" in text_lower:
+        return "excitement", abs(score)
+
+    if any(word in text_lower for word in ["yeah right", "sure", "obviously"]):
+        return "sarcasm", abs(score)
+
+    if any(word in text_lower for word in ["sorry", "it's okay", "i understand"]):
+        return "compassion", abs(score)
+
+    if score > 0.5:
+        return "joy", score
+    elif score < -0.5:
+        return "anger", abs(score)
+    elif score < -0.2:
+        return "sadness", abs(score)
     else:
-        emotion = "Neutral"
-        
-    logger.info(f"Detected Emotion: {emotion} | Intensity: {intensity:.2f} | Score: {compound}")
-    
-    return {
-        "emotion": emotion,
-        "intensity": intensity
-    }
+        return "neutral", abs(score)
